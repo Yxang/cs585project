@@ -1,0 +1,59 @@
+<?xml version = "1.0"?>
+<schemas>
+   <schema name = "Transaction">
+      <path>
+         hdfs://localhost:9000/user/Project1/data/Transactions.txt
+      </path>
+      <field>
+         <name>TransID</name>
+         <dtype>int</dtype>
+      </field>
+      <field>
+         <name>CustID</name>
+         <dtype>int</dtype>
+      </field>
+      <field>
+         <name>TransTotal</name>
+         <dtype>float</dtype>
+      </field>
+      <field>
+         <name>TransNumItems</name>
+         <dtype>int</dtype>
+      </field>
+      <field>
+         <name>TransDesc</name>
+         <dtype>str</dtype>
+      </field>
+   </schema>
+   <schema name = "Customers">
+      <path>
+         hdfs://localhost:9000/user/Project1/data/Customers.txt
+      </path>
+      <field>
+         <name>ID</name>
+         <dtype>int</dtype>
+      </field>
+      <field>
+         <name>Name</name>
+         <dtype>str</dtype>
+      </field>
+      <field>
+         <name>Age</name>
+         <dtype>int</dtype>
+      </field>
+      <field>
+         <name>Gender</name>
+         <dtype>str</dtype>
+      </field>
+      <field>
+         <name>CountryCode</name>
+         <dtype>int</dtype>
+      </field>
+      <field>
+         <name>Salary</name>
+         <dtype>float</dtype>
+      </field>
+   </schema>
+   
+
+</schemas>

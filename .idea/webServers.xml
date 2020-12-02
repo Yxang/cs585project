@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="4568cc65-2238-426b-ac94-b1fbc8ae164e" name="mqp@192.168.50.70" url="">
+        <fileTransfer rootFolder="/home/mqp" accessType="SFTP" host="192.168.50.70" port="22" sshConfigId="54854624-d9db-47c7-8d08-0d1eaa288f9d" sshConfig="mqp@192.168.193.70:22">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
