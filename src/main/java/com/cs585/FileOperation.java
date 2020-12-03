@@ -2,7 +2,6 @@ package com.cs585;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -28,6 +27,7 @@ public class FileOperation {
         FileSystem fileSystem = FileSystem.get(new URI(HDFS_PATH), new Configuration());
 		fileSystem.delete(new Path(FILE_PATH), true);
 	}
+
  
     // download data
     // eg:  String HDFS_PATH = "hdfs://localhost:9000";
