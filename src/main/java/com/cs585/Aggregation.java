@@ -27,7 +27,7 @@ public class Aggregation {
         private Text outputKey = new Text();
         private Text outputValue = new Text();
         private Random rnd = new Random();
-        private Double threshold = 0.;
+        private Double sampleRate = 0.;
 
 
         @Override
@@ -35,13 +35,13 @@ public class Aggregation {
             super.setup(context);
             Configuration conf = context.getConfiguration();
             parseResult = (ParseResult) ConfUtil.getClass("parseResult", conf, ParseResult.class);
-            threshold = parseResult.threshold / 100.;
+            sampleRate = parseResult.sampleRate / 100.;
         }
 
         @Override
         public void map(Object key, Text value, Context context
         ) throws IOException, InterruptedException {
-            if (rnd.nextDouble() > threshold){
+            if (rnd.nextDouble() > sampleRate){
                 return ;
             }
 
@@ -87,7 +87,7 @@ public class Aggregation {
             super.setup(context);
             Configuration conf = context.getConfiguration();
             parseResult = (ParseResult) ConfUtil.getClass("parseResult", conf, ParseResult.class);
-            threshold = parseResult.threshold / 100.;
+            threshold = parseResult.sampleRate / 100.;
         }
 
         @Override

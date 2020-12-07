@@ -94,7 +94,9 @@ public class Cli {
         // 3: threshold
         ParseResult result = null;
 
-        String pattern = "\\Aselect ([\\S(?<=,) ]+?) from ([\\S(?<=,) ]+?) group by ([\\S(?<=,) ]+?)(?: threshold ([\\S(?<=,) ]+))?\\Z";
+        String pattern = "\\Aselect ([\\S(?<=,) ]+?) from ([\\S(?<=,) ]+?) group by ([\\S(?<=,) ]+?)" +
+                "(?: threshold ([\\S(?<=,) ]+?))?" +
+                "(?: sample rate ([\\S(?<=,) ]+?))?\\Z";
         Pattern r = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
         Matcher m = r.matcher(input.trim());
         if (m.find()){
@@ -102,6 +104,7 @@ public class Cli {
             String from = m.group(2);
             String groupBy = m.group(3);
             String threshold = m.group(4);  // null if not exists
+            String sampleRate = m.group(5);  // null if not exists
 
             if (threshold == null){
                 threshold = "5";
@@ -117,6 +120,21 @@ public class Cli {
                 }
             }
             Integer intThreshold = Integer.parseInt(threshold);
+
+            if (sampleRate == null){
+                sampleRate = "100";
+            }
+            else{
+                if (!isNumeric(sampleRate)){
+                    System.out.println("Sample rate \"" + sampleRate + "\" is not numeric");
+                    return null;
+                }
+                else if (Double.parseDouble(threshold) < 0 || Double.parseDouble(sampleRate) > 100){
+                    System.out.println("Sample rate \"" + sampleRate + "\" should between 0 and 100");
+                    return null;
+                }
+            }
+            Integer intSampleRate = Integer.parseInt(sampleRate);
 
 
 
@@ -208,7 +226,7 @@ public class Cli {
                 return null;
             }
 
-            result = new ParseResult(groupByItems, aggItems, fromSchema, intThreshold);
+            result = new ParseResult(groupByItems, aggItems, fromSchema, intThreshold, intSampleRate);
         }
         else{
             System.out.println("Invalid command.");
