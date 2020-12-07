@@ -23,16 +23,22 @@ public class FileOperation {
     // delete a path 
     // eg:  String HDFS_PATH = "hdfs://localhost:9000";
     //      String FILE_PATH = "/user/output";
-	private static void deleteData(String HDFS_PATH, String FILE_PATH) throws IOException, URISyntaxException {
+	public void deleteData(String HDFS_PATH, Path FILE_PATH) throws IOException, URISyntaxException {
         FileSystem fileSystem = FileSystem.get(new URI(HDFS_PATH), new Configuration());
-		fileSystem.delete(new Path(FILE_PATH), true);
+		fileSystem.delete((FILE_PATH), true);
 	}
 
- 
+	public void Rename(String HDFS_PATH, Path srcPath, Path desPath) throws Exception{
+		FileSystem fileSystem = FileSystem.get(new URI(HDFS_PATH), new Configuration());
+		fileSystem.rename(srcPath,desPath);
+		fileSystem.close();
+	}
+
+
     // download data
     // eg:  String HDFS_PATH = "hdfs://localhost:9000";
     //      String FILE_PATH = "/user/output";
-	private static void downloadData(String HDFS_PATH, String FILE_PATH) throws IOException, URISyntaxException {
+	public void downloadData(String HDFS_PATH, String FILE_PATH) throws IOException, URISyntaxException {
         FileSystem fileSystem = FileSystem.get(new URI(HDFS_PATH), new Configuration());
 		FSDataInputStream in = fileSystem.open(new Path(FILE_PATH));
 		IOUtils.copyBytes(in, System.out, 1024, true);
@@ -41,7 +47,7 @@ public class FileOperation {
     // make a direction 
     // eg:  String HDFS_PATH = "hdfs://localhost:9000";
     //      String DIR_PATH = "/user";
-	private static void makeDir(String HDFS_PATH, String DIR_PATH) throws IOException, URISyntaxException {
+	public   void makeDir(String HDFS_PATH, String DIR_PATH) throws IOException, URISyntaxException {
         FileSystem fileSystem = FileSystem.get(new URI(HDFS_PATH), new Configuration());
 		fileSystem.mkdirs(new Path(DIR_PATH));
 	}
@@ -50,7 +56,7 @@ public class FileOperation {
     // eg:  String HDFS_PATH = "hdfs://localhost:9000";
     //      String FILE_PATH = "/user/output";
     //      String LOCAL_PATH = "d:/log.txt";
-	private static void uploadData(String HDFS_PATH, String FILE_PATH, String LOCAL_PATH) throws IOException,
+	public void uploadData(String HDFS_PATH, String FILE_PATH, String LOCAL_PATH) throws IOException,
 			URISyntaxException {
         FileSystem fileSystem = FileSystem.get(new URI(HDFS_PATH), new Configuration());
 		FSDataOutputStream out = fileSystem.create(new Path(FILE_PATH));
