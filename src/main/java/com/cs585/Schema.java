@@ -14,7 +14,7 @@ class Schema {
         String type;
         Field(){}
         Field(String name, String type) {
-            this.name = name.toLowerCase();
+            this.name = name;
             this.type = type.toLowerCase();
         }
     }
