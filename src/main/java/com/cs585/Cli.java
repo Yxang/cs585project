@@ -11,6 +11,7 @@ import org.jline.terminal.TerminalBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -234,7 +235,7 @@ public class Cli {
         return result;
     }
     public static boolean isNumeric(String str) {
-        return str != null && str.matches("[-+]?\\d*\\.?\\d+");
+        return NumberUtils.isCreatable(str);
     }
 
     public static void core(ParseResult parseResult){
