@@ -90,7 +90,7 @@ class Schema {
     }
 
     public Integer getFieldNumber(String name){
-        Integer n = 0;
+        int n = 0;
         for (;n < fields.size(); n++){
             if (name.equals(fields.get(n).name)){
                 return n;

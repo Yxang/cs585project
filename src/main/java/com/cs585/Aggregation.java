@@ -68,7 +68,7 @@ public class Aggregation {
                 stringOutputValue = String.join(",",
                         stringOutputValue, thisValue);
             }
-            stringOutputValue = stringOutputKey.replace("\1,", "");
+            stringOutputValue = stringOutputValue.replace("\1,", "");
             outputValue.set(stringOutputValue);
             context.write(outputKey, outputValue);
         }
@@ -143,7 +143,8 @@ public class Aggregation {
         }
     }
 
-    public static boolean run(ParseResult parseResult, Path outputPath) throws IOException, ClassNotFoundException, InterruptedException {
+    public static boolean run(ParseResult parseResult, Path outputPath) throws IOException, ClassNotFoundException,
+            InterruptedException {
         Configuration conf = new Configuration();
         String hadoop_home = System.getenv("HADOOP_HOME");
         conf.addResource(new Path(hadoop_home + "/etc/hadoop/core-site.xml"));
