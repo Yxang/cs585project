@@ -41,19 +41,7 @@ class Schema {
     }
 
     Schema(Element element) {
-        this.path = element.getElementsByTagName("path").item(0).getTextContent().trim();
-
-        this.name = element.getAttribute("name");
-        NodeList fieldNodeList = element.getElementsByTagName("field");
-        for (int i = 0; i < fieldNodeList.getLength(); i ++){
-            Node nNode = fieldNodeList.item(i);
-            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                Element eElement = (Element) nNode;
-                String fieldName = eElement.getElementsByTagName("name").item(0).getTextContent();
-                String fieldType = eElement.getElementsByTagName("dtype").item(0).getTextContent();
-                fields.add(new Field(fieldName, fieldType));
-            }
-        }
+        this(element, element.getElementsByTagName("path").item(0).getTextContent().trim());
     }
 
     public void print(){
