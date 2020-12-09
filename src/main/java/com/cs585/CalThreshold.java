@@ -123,22 +123,27 @@ public class CalThreshold {
             ArrayList<Float> oldResult = new ArrayList<Float>();
             int round = Integer.parseInt(context.getConfiguration().get("sampleRound"));
             for (Text val : values) {
+
                 String[] str = val.toString().split(",");
                 int aggNum = str.length - 1;
-                for(int i =0; i < aggNum; i++){
-                    calculator.add((float) 0);
-                    oldResult.add((float) 1);
+                if(calculator.size() == 0){
+                    for(int i =0; i < aggNum; i++){
+                        calculator.add((float) 0);
+                        oldResult.add((float) 1);
+                    }
                 }
+
                 if (str[0].equals("lastResult")){
                     for(int i =0; i < aggNum; i++){
-                        float lastCal = (Float.parseFloat(str[i+1]) * (float)(round / (round+1))) + calculator.get(i);
+                        float lastCal = (Float.parseFloat(str[i+1]) * ((float)round / (float)(round+1))) + calculator.get(i);
                         oldResult.set(i, Float.parseFloat(str[i+1]));
                         calculator.set(i,lastCal);
+
                     }
                 }
                 else if (str[0].equals("thisResult")) {
                     for(int i =0; i < aggNum; i++){
-                        float thisCal = (Float.parseFloat(str[i+1]) * (float)(1 / (round+1))) + calculator.get(i);
+                        float thisCal = (Float.parseFloat(str[i+1]) * ((float)1 / (float)(round+1))) + calculator.get(i);
                         calculator.set(i,thisCal);
                     }
                 }
