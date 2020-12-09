@@ -23,14 +23,22 @@ public class LoopController {
     }
     public Path run() throws Exception {
         int iter = 1;
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Running iter 0");
         Aggregation.run(parseResult, outputPath);
         while(iter < maxIter){
-            System.out.println("Running iter " + iter);
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Running iter " + iter);
             Aggregation.run(parseResult, aggTmp);
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Calculating threshold");
             CalThreshold calThreshold = new CalThreshold(outputPath, aggTmp, iter + 1, this.cmpTmp);
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Comparing threshold");
             if (calThreshold.GiveThreshold() < parseResult.threshold){
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Success");
                 break;
             }
+            iter ++;
+        }
+        if (iter == maxIter){
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Max iter reached");
         }
         return outputPath;
     }

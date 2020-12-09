@@ -56,7 +56,7 @@ public class CalThreshold {
         return MaxThreshold;
     }
 
-    public void newResult(Path lastResult, Path thisResult, Path outResult)throws Exception{
+    public void newResult(Path lastResult, Path thisResult, Path outResult) throws IOException, ClassNotFoundException, InterruptedException {
         Configuration conf = new Configuration();
         conf.set("sampleRound", String.valueOf(sampleRound));
         Job job = Job.getInstance(conf, "Calculate Threshold #" + sampleRound);
