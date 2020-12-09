@@ -24,8 +24,7 @@ import java.util.regex.Pattern;
 
 public class Cli {
     public static void read(String path)
-            throws IOException, ParserConfigurationException, SAXException,
-            InterruptedException, ClassNotFoundException, ValueNotFoundException {
+            throws Exception {
         System.out.println("Reading Schemas from " + path);
 
         File inputFile = new File(path);
@@ -74,8 +73,7 @@ public class Cli {
     }
 
     public static void main(String[] args)
-            throws IOException, ParserConfigurationException, SAXException,
-            ClassNotFoundException, InterruptedException, ValueNotFoundException {
+            throws Exception {
 
         if (args.length < 1){
             System.out.println("Please input the path of the schemas configuration file.");
@@ -242,8 +240,9 @@ public class Cli {
         return NumberUtils.isNumber(str);
     }
 
-    public static void core(ParseResult parseResult) throws InterruptedException, IOException, ClassNotFoundException {
-        Aggregation.run(parseResult, new Path("output"));
+    public static void core(ParseResult parseResult) throws Exception {
+        LoopController loopController = new LoopController(parseResult, 6);
+        loopController.run();
     }
 }
 

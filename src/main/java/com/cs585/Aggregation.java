@@ -137,7 +137,6 @@ public class Aggregation {
                 }
             }
             stringOutputValue = stringOutputValue.replace("\1,", "");
-            stringOutputValue = stringOutputValue + "\t1";
             outputKey.set(key.toString());
             outputValue.set(stringOutputValue);
             context.write(outputKey, outputValue) ;
@@ -147,14 +146,6 @@ public class Aggregation {
     public static boolean run(ParseResult parseResult, Path outputPath) throws IOException, ClassNotFoundException,
             InterruptedException {
         Configuration conf = new Configuration();
-        String hadoop_home = System.getenv("HADOOP_HOME");
-        conf.addResource(new Path(hadoop_home + "/etc/hadoop/core-site.xml"));
-        conf.set("fs.hdfs.impl",
-                org.apache.hadoop.hdfs.DistributedFileSystem.class.getName()
-        );
-        conf.set("fs.file.impl",
-                org.apache.hadoop.fs.LocalFileSystem.class.getName()
-        );
         ConfUtil.setClass("parseResult", conf, parseResult);
         Job job = Job.getInstance(conf, "Agg Loop #" + count);
         job.setJarByClass(Aggregation.class);

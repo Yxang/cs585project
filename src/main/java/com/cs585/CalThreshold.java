@@ -33,9 +33,9 @@ public class CalThreshold {
         operation.Rename(HDFS_PATH, outResult, lastResult);
     }
 
-    public float GiveThreshold(){
+    public double GiveThreshold(){
         Configuration conf = new Configuration();
-        float MaxThreshold = (float)0;
+        double MaxThreshold = 0;
         Path path = new Path(HDFS_PATH + thresholdPath + "/part-r-00000");
         try {
             FileSystem fileSystem = path.getFileSystem(conf);
@@ -44,7 +44,7 @@ public class CalThreshold {
             String s = null;
             while((s = bufr.readLine()) != null) {
                 String[] str = s.split("\t");
-                float Threshold = Float.parseFloat(str[2]);
+                double Threshold = Float.parseFloat(str[2]);
                 MaxThreshold = Math.max(MaxThreshold, Threshold);
             }
             bufr.close();
@@ -53,14 +53,13 @@ public class CalThreshold {
         }catch(Exception e) {
             e.printStackTrace();
         }
-
         return MaxThreshold;
     }
 
     public void newResult(Path lastResult, Path thisResult, Path outResult)throws Exception{
         Configuration conf = new Configuration();
         conf.set("sampleRound", String.valueOf(sampleRound));
-        Job job = Job.getInstance(conf, "Calculate Threshold");
+        Job job = Job.getInstance(conf, "Calculate Threshold #" + sampleRound);
         job.setJarByClass(CalThreshold.class);
         job.setReducerClass(ProbReducer.class);
         job.setMapOutputKeyClass(Text.class);
