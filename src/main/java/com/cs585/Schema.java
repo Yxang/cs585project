@@ -77,13 +77,17 @@ class Schema {
         return false;
     }
 
-    public Integer getFieldNumber(String name){
+    public Integer getFieldNumber(String name) throws ValueNotFoundException {
         int n = 0;
         for (;n < fields.size(); n++){
-            if (name.equals(fields.get(n).name)){
+            if (name.toLowerCase().equals(fields.get(n).name.toLowerCase())){
                 return n;
             }
         }
-        return -1;
+        throw new ValueNotFoundException();
     }
+}
+
+class ValueNotFoundException extends Exception{
+
 }

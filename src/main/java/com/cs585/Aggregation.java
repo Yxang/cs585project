@@ -137,6 +137,7 @@ public class Aggregation {
                 }
             }
             stringOutputValue = stringOutputValue.replace("\1,", "");
+            stringOutputValue = stringOutputValue + "\t1";
             outputKey.set(key.toString());
             outputValue.set(stringOutputValue);
             context.write(outputKey, outputValue) ;
@@ -170,6 +171,5 @@ public class Aggregation {
         return job.waitForCompletion(false);
 
     }
-
 }
 

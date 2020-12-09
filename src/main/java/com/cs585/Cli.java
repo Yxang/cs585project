@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 public class Cli {
     public static void read(String path)
             throws IOException, ParserConfigurationException, SAXException,
-            InterruptedException, ClassNotFoundException {
+            InterruptedException, ClassNotFoundException, ValueNotFoundException {
         System.out.println("Reading Schemas from " + path);
 
         File inputFile = new File(path);
@@ -61,7 +61,6 @@ public class Cli {
                         parse(line, schemas, new String[]{"sum", "avg", "count"});
                 if (parseResult != null) {
                     core(parseResult);
-                    Aggregation.run(parseResult, new Path("output"));
                 }
             }
             catch (UserInterruptException e){
@@ -76,7 +75,7 @@ public class Cli {
 
     public static void main(String[] args)
             throws IOException, ParserConfigurationException, SAXException,
-            ClassNotFoundException, InterruptedException {
+            ClassNotFoundException, InterruptedException, ValueNotFoundException {
 
         if (args.length < 1){
             System.out.println("Please input the path of the schemas configuration file.");
@@ -87,7 +86,7 @@ public class Cli {
         }
     }
 
-    private static ParseResult parse(String input, Schemas schemas, String[] supportedAggFun){
+    private static ParseResult parse(String input, Schemas schemas, String[] supportedAggFun) throws ValueNotFoundException {
         ArrayList<String> arraySupportedAggFun = new ArrayList<>(Arrays.asList(supportedAggFun));
         // 0: group by columns
         // 1: agg columns to apply functions
@@ -169,17 +168,20 @@ public class Cli {
             ArrayList<String> selectItems = new ArrayList<>(
                     Arrays.asList(select.toLowerCase().trim().split(","))
             );
+            HashMap<Integer, FieldLocation> locationMap = new HashMap<>();
             ArrayList<AggField> aggItems = new ArrayList<>();
             String aggPattern = "\\A(.*)\\((.+)\\)\\Z";
             Pattern aggr = Pattern.compile(aggPattern, Pattern.CASE_INSENSITIVE);
             Matcher aggm;
-            for (String selectItem : selectItems){
+            for (int i = 0, agg_i = 0, non_agg_i = 0; i < selectItems.size(); i++){
+                String selectItem = selectItems.get(i);
                 selectItem = selectItem.trim();
                 String realSelectItem;
                 String functionName;
                 aggm = aggr.matcher(selectItem);
                 if (aggm.find()) {
-                    // Function form
+                    // agg field
+                    locationMap.put(i, new FieldLocation("agg", agg_i++));
                     functionName = aggm.group(1);
                     realSelectItem = aggm.group(2);
                     if (!arraySupportedAggFun.contains(functionName)){
@@ -205,6 +207,8 @@ public class Cli {
                     aggItems.add(new AggField(realSelectItem, functionName, fromSchema.getFieldNumber(realSelectItem)));
                 }
                 else{
+                    // group by field
+                    locationMap.put(i, new FieldLocation("non-agg", non_agg_i++));
                     realSelectItem = selectItem;
                     if (!fromSchema.hasField(realSelectItem)){
                         System.out.println("Select by field \""
@@ -227,7 +231,7 @@ public class Cli {
                 return null;
             }
 
-            result = new ParseResult(groupByItems, aggItems, fromSchema, intThreshold, intSampleRate);
+            result = new ParseResult(groupByItems, aggItems, locationMap, fromSchema, intThreshold, intSampleRate);
         }
         else{
             System.out.println("Invalid command.");
@@ -235,11 +239,11 @@ public class Cli {
         return result;
     }
     public static boolean isNumeric(String str) {
-        return NumberUtils.isCreatable(str);
+        return NumberUtils.isNumber(str);
     }
 
-    public static void core(ParseResult parseResult){
-        parseResult.print();
+    public static void core(ParseResult parseResult) throws InterruptedException, IOException, ClassNotFoundException {
+        Aggregation.run(parseResult, new Path("output"));
     }
 }
 
