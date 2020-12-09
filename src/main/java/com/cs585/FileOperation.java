@@ -28,7 +28,7 @@ public class FileOperation {
 		fileSystem.delete((FILE_PATH), true);
 	}
 
-	public void Rename(String HDFS_PATH, Path srcPath, Path desPath) throws Exception{
+	public void Rename(String HDFS_PATH, Path srcPath, Path desPath) throws IOException, URISyntaxException {
 		FileSystem fileSystem = FileSystem.get(new URI(HDFS_PATH), new Configuration());
 		fileSystem.rename(srcPath,desPath);
 		fileSystem.close();

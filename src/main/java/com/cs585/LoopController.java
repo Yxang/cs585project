@@ -30,8 +30,9 @@ public class LoopController {
             Aggregation.run(parseResult, aggTmp);
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Calculating threshold");
             CalThreshold calThreshold = new CalThreshold(outputPath, aggTmp, iter + 1, this.cmpTmp);
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Comparing threshold");
-            if (calThreshold.GiveThreshold() < parseResult.threshold){
+            double threshold = calThreshold.giveThreshold();
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>The threshold is: " + threshold);
+            if (calThreshold.giveThreshold() < parseResult.threshold / 100.){
                 System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Success");
                 break;
             }

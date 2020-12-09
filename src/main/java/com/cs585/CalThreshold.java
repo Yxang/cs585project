@@ -3,6 +3,7 @@ package com.cs585;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import org.apache.hadoop.conf.Configuration;
@@ -23,17 +24,17 @@ public class CalThreshold {
     Path thresholdPath;
     String HDFS_PATH = "hdfs://localhost:9000";
 
-    CalThreshold(Path lastResult, Path thisResult, int sampleR, Path outResult) throws Exception {
+    CalThreshold(Path lastResult, Path thisResult, int sampleR, Path outResult) throws InterruptedException, IOException, ClassNotFoundException, URISyntaxException {
         sampleRound = sampleR;
         thresholdPath = lastResult;
         newResult( lastResult, thisResult,  outResult);
-        FileOperation operation= new FileOperation();
+        FileOperation operation = new FileOperation();
         operation.deleteData(HDFS_PATH, lastResult);
         operation.deleteData(HDFS_PATH, thisResult);
         operation.Rename(HDFS_PATH, outResult, lastResult);
     }
 
-    public double GiveThreshold(){
+    public double giveThreshold(){
         Configuration conf = new Configuration();
         double MaxThreshold = 0;
         Path path = new Path(HDFS_PATH + thresholdPath + "/part-r-00000");
@@ -56,7 +57,7 @@ public class CalThreshold {
         return MaxThreshold;
     }
 
-    public void newResult(Path lastResult, Path thisResult, Path outResult) throws IOException, ClassNotFoundException, InterruptedException {
+    public boolean newResult(Path lastResult, Path thisResult, Path outResult) throws IOException, ClassNotFoundException, InterruptedException {
         Configuration conf = new Configuration();
         conf.set("sampleRound", String.valueOf(sampleRound));
         Job job = Job.getInstance(conf, "Calculate Threshold #" + sampleRound);
@@ -69,7 +70,7 @@ public class CalThreshold {
         MultipleInputs.addInputPath(job,lastResult,TextInputFormat.class,lastResultMapper.class);
         MultipleInputs.addInputPath(job,thisResult,TextInputFormat.class,thisResultMapper.class);
         FileOutputFormat.setOutputPath(job, outResult);
-        System.exit(job.waitForCompletion(true) ? 0 : 1);
+        return job.waitForCompletion(true);
     }
 
     public static class lastResultMapper
