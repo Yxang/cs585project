@@ -64,8 +64,9 @@ public class Cli {
             }
             catch (EndOfFileException e){
                 System.out.println("\nGoodbye.");
-                FileOperation.deleteData(new Path("/tmp/cs585"));
                 return ;
+            }finally {
+                FileOperation.deleteData(new Path("/tmp/cs585"));
             }
         }
     }
