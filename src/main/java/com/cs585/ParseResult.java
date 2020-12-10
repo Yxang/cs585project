@@ -249,6 +249,18 @@ public class ParseResult{
         return Double.parseDouble(sampleRate);
     }
 
+    public static String checkReturnType(String funName){
+        switch (funName) {
+            case "sum":
+            case "avg":
+                return "float";
+            case "count":
+                return "int";
+            default:
+                return null;
+        }
+    }
+
 }
 
 class FieldLocation{

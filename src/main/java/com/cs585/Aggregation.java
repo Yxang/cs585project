@@ -3,6 +3,7 @@ package com.cs585;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Random;
 
 import org.apache.hadoop.conf.Configuration;
@@ -60,10 +61,16 @@ public class Aggregation {
             // value
             for (AggField aggField: parseResult.aggFields){
                 String thisValue = "";
-                if (aggField.aggFunName.equals("sum")){
-                    thisValue = str[aggField.nColumn];
-                }else if (aggField.aggFunName.equals("count")){
-                    thisValue = "1";
+                switch (aggField.aggFunName) {
+                    case "sum":
+                        thisValue = str[aggField.nColumn];
+                        break;
+                    case "count":
+                        thisValue = "1";
+                        break;
+                    case "avg":
+                        thisValue = str[aggField.nColumn];
+                        break;
                 }
                 stringOutputValue = String.join(",",
                         stringOutputValue, thisValue);
@@ -96,44 +103,79 @@ public class Aggregation {
         ) throws IOException, InterruptedException {
             ArrayList<Integer> intResults = new ArrayList<>();
             ArrayList<Double> floatResults = new ArrayList<>();
-            HashMap<Integer, Integer> indexMapping = new HashMap<>();
+            HashMap<Integer, Integer> indexMapping = new HashMap<>(); // maps total index to float or int index
+            Integer count = 0;
+            // int and float numbering phase
             for (AggField aggField: parseResult.aggFields){
-                if (aggField.aggFunName.equals("sum")){
-                    indexMapping.put(intResults.size() + floatResults.size(),
-                            floatResults.size());
-                    floatResults.add(0.);
-                }else if (aggField.aggFunName.equals("count")){
-                    indexMapping.put(intResults.size() + floatResults.size(),
-                            intResults.size());
-                    intResults.add(0);
+                switch (Objects.requireNonNull(ParseResult.checkReturnType(aggField.aggFunName))) {
+                    case "float":
+                        indexMapping.put(intResults.size() + floatResults.size(),
+                                floatResults.size());
+                        floatResults.add(0.);
+                        break;
+                    case "int":
+                        indexMapping.put(intResults.size() + floatResults.size(),
+                                intResults.size());
+                        intResults.add(0);
+                        break;
                 }
             }
+            // calculating phase
             String stringOutputValue = "\1";
             for (Text val : values) {
                 String[] str = val.toString().split(",");
+                count += 1;
                 for (int i = 0; i < parseResult.aggFields.size(); i++){
                     AggField aggField = parseResult.aggFields.get(i);
-                    if (aggField.aggFunName.equals("sum")){
-                        floatResults.set(indexMapping.get(i),
-                                floatResults.get(indexMapping.get(i)) + Double.parseDouble(str[i])
-                        );
-                    }else if (aggField.aggFunName.equals("count")){
-                        intResults.set(indexMapping.get(i),
-                                intResults.get(indexMapping.get(i)) + Integer.parseInt(str[i])
-                        );
+                    switch (aggField.aggFunName) {
+                        case "sum":
+                            floatResults.set(indexMapping.get(i),
+                                    floatResults.get(indexMapping.get(i)) + Double.parseDouble(str[i])
+                            );
+                            break;
+                        case "count":
+                            intResults.set(indexMapping.get(i),
+                                    intResults.get(indexMapping.get(i)) + Integer.parseInt(str[i])
+                            );
+                            break;
+                        case "avg":
+                            floatResults.set(indexMapping.get(i),
+                                    floatResults.get(indexMapping.get(i)) + Double.parseDouble(str[i])
+                            );
+                            break;
                     }
                 }
             }
+            // calculating ending phase (deal with avg)
+            count = (int) (count / sampleRate);
             for (int i = 0; i < parseResult.aggFields.size(); i++){
                 AggField aggField = parseResult.aggFields.get(i);
-                if (aggField.aggFunName.equals("sum")){
-                    stringOutputValue = String.join(",",
-                            stringOutputValue,
-                            String.valueOf(floatResults.get(indexMapping.get(i)) / sampleRate));
-                }else if (aggField.aggFunName.equals("count")){
-                    stringOutputValue = String.join(",",
-                            stringOutputValue,
-                            String.valueOf(Math.round(intResults.get(indexMapping.get(i)) / sampleRate)));
+                switch (aggField.aggFunName){
+                    case "sum":
+                        break;
+                    case "count":
+                        break;
+                    case "avg":
+                        floatResults.set(indexMapping.get(i),
+                                floatResults.get(indexMapping.get(i)) / count
+                        );
+                        break;
+                }
+            }
+            // constructing result phase
+            for (int i = 0; i < parseResult.aggFields.size(); i++){
+                AggField aggField = parseResult.aggFields.get(i);
+                switch (Objects.requireNonNull(ParseResult.checkReturnType(aggField.aggFunName))) {
+                    case "float":
+                        stringOutputValue = String.join(",",
+                                stringOutputValue,
+                                String.valueOf(floatResults.get(indexMapping.get(i)) / sampleRate));
+                        break;
+                    case "int":
+                        stringOutputValue = String.join(",",
+                                stringOutputValue,
+                                String.valueOf(Math.round(intResults.get(indexMapping.get(i)) / sampleRate)));
+                        break;
                 }
             }
             stringOutputValue = stringOutputValue.replace("\1,", "");
