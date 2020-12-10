@@ -198,7 +198,7 @@ public class ParseResult{
                 }
             }
             if (aggItems.size() == 0){
-                System.out.println("At least one agg field needed.");
+                System.out.println("At least one agg field is needed.");
                 return null;
             }
 
