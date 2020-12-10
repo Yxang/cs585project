@@ -184,9 +184,16 @@ public class CalThreshold {
             output_Key.set(key);
             String output = String.valueOf(calculator.get(0));
             for(int j = 1; j < calculator.size(); j++){
-                output += "," + String.valueOf(calculator.get(j));
+                String resultType = ParseResult.checkReturnType(parseResult.aggFields.get(j).aggFunName);
+                assert resultType != null;
+                if(resultType.equals("float")){
+                    output += "," + calculator.get(j);
+                }else if (resultType.equals("int")){
+                    output += "," + (Integer) Math.round(calculator.get(j));
+                }
+
             }
-            output += "\t" + String.valueOf(maxThreshold);
+            output += "\t" + maxThreshold;
             output_value.set(output);
             context.write(output_Key, output_value);
         }
