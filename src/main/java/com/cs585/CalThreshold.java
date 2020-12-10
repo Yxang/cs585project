@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
@@ -23,43 +24,58 @@ public class CalThreshold {
     int sampleRound;
     Path thresholdPath;
     String HDFS_PATH = "hdfs://localhost:9000";
+    ParseResult parseResult;
 
-    CalThreshold(Path lastResult, Path thisResult, int sampleR, Path outResult) throws InterruptedException, IOException, ClassNotFoundException, URISyntaxException {
+    CalThreshold(Path lastResult, Path thisResult, int sampleR, Path outResult, ParseResult parseResult)
+            throws InterruptedException, IOException, ClassNotFoundException, URISyntaxException {
         sampleRound = sampleR;
         thresholdPath = lastResult;
+        this.parseResult = parseResult;
         newResult( lastResult, thisResult,  outResult);
-        FileOperation operation = new FileOperation();
-        operation.deleteData(HDFS_PATH, lastResult);
-        operation.deleteData(HDFS_PATH, thisResult);
-        operation.Rename(HDFS_PATH, outResult, lastResult);
+        FileOperation.deleteData(lastResult);
+        FileOperation.deleteData(thisResult);
+        FileOperation.Rename(outResult, lastResult);
     }
 
-    public double giveThreshold(){
-        Configuration conf = new Configuration();
+    public double giveEpsilon() throws IOException {
         double MaxThreshold = 0;
-        Path path = new Path(HDFS_PATH + thresholdPath + "/part-r-00000");
+        Configuration conf = new Configuration();
+        FileSystem fileSystem = FileSystem.get(conf);
         try {
-            FileSystem fileSystem = path.getFileSystem(conf);
-            FSDataInputStream fsDataInputStream = fileSystem.open(path);
-            BufferedReader bufr = new BufferedReader(new InputStreamReader(fsDataInputStream));
-            String s = null;
-            while((s = bufr.readLine()) != null) {
-                String[] str = s.split("\t");
-                double Threshold = Float.parseFloat(str[2]);
-                MaxThreshold = Math.max(MaxThreshold, Threshold);
+            Path dirPath = new Path(HDFS_PATH + thresholdPath);
+            FileStatus[] fileStatuses = fileSystem.listStatus(dirPath);
+
+            for (FileStatus fileStatus: fileStatuses){
+                Path path = fileStatus.getPath();
+                FSDataInputStream fsDataInputStream = fileSystem.open(path);
+                BufferedReader bufr = new BufferedReader(new InputStreamReader(fsDataInputStream));
+                try{
+                    String s = null;
+                    while((s = bufr.readLine()) != null) {
+                        String[] str = s.split("\t");
+                        double Threshold = Float.parseFloat(str[2]);
+                        MaxThreshold = Math.max(MaxThreshold, Threshold);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }finally {
+                    bufr.close();
+                    fsDataInputStream.close();
+                }
             }
-            bufr.close();
-            fsDataInputStream.close();
-            fileSystem.close();
         }catch(Exception e) {
             e.printStackTrace();
+        }finally {
+            fileSystem.close();
         }
         return MaxThreshold;
     }
 
-    public boolean newResult(Path lastResult, Path thisResult, Path outResult) throws IOException, ClassNotFoundException, InterruptedException {
+    public boolean newResult(Path lastResult, Path thisResult, Path outResult)
+            throws IOException, ClassNotFoundException, InterruptedException {
         Configuration conf = new Configuration();
         conf.set("sampleRound", String.valueOf(sampleRound));
+        ConfUtil.setClass("parseResult", conf, parseResult);
         Job job = Job.getInstance(conf, "Calculate Threshold #" + sampleRound);
         job.setJarByClass(CalThreshold.class);
         job.setReducerClass(ProbReducer.class);
@@ -114,6 +130,16 @@ public class CalThreshold {
 
         private Text output_Key = new Text();
         private Text output_value = new Text();
+        private int round;
+        private ParseResult parseResult;
+
+        @Override
+        protected void setup(Context context) throws IOException, InterruptedException {
+            super.setup(context);
+            Configuration conf = context.getConfiguration();
+            round = Integer.parseInt(conf.get("sampleRound"));
+            parseResult = (ParseResult) ConfUtil.getClass("parseResult", conf, ParseResult.class);
+        }
 
         @Override
         public void reduce(Text key, Iterable<Text> values,
@@ -121,7 +147,6 @@ public class CalThreshold {
         ) throws IOException, InterruptedException {
             ArrayList<Float> calculator = new ArrayList<Float>();
             ArrayList<Float> oldResult = new ArrayList<Float>();
-            int round = Integer.parseInt(context.getConfiguration().get("sampleRound"));
             for (Text val : values) {
 
                 String[] str = val.toString().split(",");

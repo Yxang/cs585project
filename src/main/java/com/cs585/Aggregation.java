@@ -27,7 +27,7 @@ public class Aggregation {
         private Text outputKey = new Text();
         private Text outputValue = new Text();
         private Random rnd = new Random();
-        private Double sampleRate = 0.;
+        private Double sampleRate;
 
 
         @Override
@@ -35,7 +35,7 @@ public class Aggregation {
             super.setup(context);
             Configuration conf = context.getConfiguration();
             parseResult = (ParseResult) ConfUtil.getClass("parseResult", conf, ParseResult.class);
-            sampleRate = parseResult.sampleRate / 100.;
+            sampleRate = parseResult.sampleRate;
         }
 
         @Override
@@ -80,14 +80,14 @@ public class Aggregation {
         private Text outputKey = new Text();
         private Text outputValue = new Text();
         private ParseResult parseResult;
-        private Double threshold;
+        private Double sampleRate;
 
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
             super.setup(context);
             Configuration conf = context.getConfiguration();
             parseResult = (ParseResult) ConfUtil.getClass("parseResult", conf, ParseResult.class);
-            threshold = parseResult.sampleRate / 100.;
+            sampleRate = parseResult.sampleRate;
         }
 
         @Override
@@ -129,11 +129,11 @@ public class Aggregation {
                 if (aggField.aggFunName.equals("sum")){
                     stringOutputValue = String.join(",",
                             stringOutputValue,
-                            String.valueOf(floatResults.get(indexMapping.get(i)) / threshold));
+                            String.valueOf(floatResults.get(indexMapping.get(i)) / sampleRate));
                 }else if (aggField.aggFunName.equals("count")){
                     stringOutputValue = String.join(",",
                             stringOutputValue,
-                            String.valueOf(Math.round(intResults.get(indexMapping.get(i)) / threshold)));
+                            String.valueOf(Math.round(intResults.get(indexMapping.get(i)) / sampleRate)));
                 }
             }
             stringOutputValue = stringOutputValue.replace("\1,", "");
