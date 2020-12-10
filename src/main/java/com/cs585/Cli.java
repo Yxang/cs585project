@@ -51,12 +51,15 @@ public class Cli {
                 line = lineReader.readLine(prompt);
                 if (line.length() == 0){
                     continue;
-                }
-                // Do things
-                ParseResult parseResult =
-                        ParseResult.parseFromString(line, schemas, new String[]{"sum", "avg", "count"});
-                if (parseResult != null) {
-                    submitJob(parseResult);
+                }else if (line.equals("exit")){
+                    throw new EndOfFileException();
+                }else {
+                    // Do things
+                    ParseResult parseResult =
+                            ParseResult.parseFromString(line, schemas, new String[]{"sum", "avg", "count"});
+                    if (parseResult != null) {
+                        submitJob(parseResult);
+                    }
                 }
             }
             catch (UserInterruptException e){
