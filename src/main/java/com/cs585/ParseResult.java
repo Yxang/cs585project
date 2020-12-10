@@ -67,7 +67,7 @@ public class ParseResult{
         String pattern = "\\Aselect ([\\S(?<=,) ]+?) from ([\\S(?<=,) ]+?) group by ([\\S(?<=,) ]+?)" +
                 "(?: threshold ([\\S(?<=,) ]+?))?" +
                 "(?: sample rate ([\\S(?<=,) ]+?))?" +
-                "(?: path \"(.+?)\")?\\Z";
+                "(?: path (.+))?\\Z";
         Pattern r = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
         Matcher m = r.matcher(input.trim());
         if (m.find()){
