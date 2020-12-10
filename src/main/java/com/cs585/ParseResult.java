@@ -91,17 +91,22 @@ public class ParseResult{
             }
 
             // path
+            String outputPath;
             if (path == null){
-                path = "/tmp/cs585/finalOutput" + count;
+                outputPath = "/tmp/cs585/finalOutput" + count;
+            }else {
+                outputPath = path;
             }
             Configuration conf = new Configuration();
             FileSystem fileSystem = FileSystem.get(conf);
-            if (fileSystem.exists(new Path(path))) {
-                System.out.println("Path \"" + path +"\" is not empty");
+            if (fileSystem.exists(new Path(outputPath))) {
+                System.out.println("Path \"" + outputPath +"\" is not empty");
                 return null;
             }else{
-                System.out.println("Result will be stored at " + path);
-                count ++;
+                System.out.println("Result will be stored at " + outputPath);
+                if (path == null){
+                    count ++;
+                }
             }
 
 
@@ -203,7 +208,7 @@ public class ParseResult{
                     fromSchema,
                     doubleThreshold,
                     doubleSampleRate,
-                    path);
+                    outputPath);
         }
         else{
             System.out.println("Invalid command.");
