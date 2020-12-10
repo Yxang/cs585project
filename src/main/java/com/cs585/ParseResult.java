@@ -93,7 +93,6 @@ public class ParseResult{
             // path
             if (path == null){
                 path = "/tmp/cs585/finalOutput" + count;
-                System.out.println("Result will be stored at " + path);
             }
             Configuration conf = new Configuration();
             FileSystem fileSystem = FileSystem.get(conf);
@@ -101,6 +100,7 @@ public class ParseResult{
                 System.out.println("Path \"" + path +"\" is not empty");
                 return null;
             }else{
+                System.out.println("Result will be stored at " + path);
                 count ++;
             }
 
