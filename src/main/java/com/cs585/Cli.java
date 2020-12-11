@@ -87,7 +87,7 @@ public class Cli {
     }
 
     public static void submitJob(ParseResult parseResult) throws Exception {
-        LoopController loopController = new LoopController(parseResult, 6);
+        LoopController loopController = new LoopController(parseResult, 16);
         FinalResultWriter finalResultWriter = new FinalResultWriter(parseResult);
         Path mrOutputPath = loopController.run();
         finalResultWriter.convertToFinal(mrOutputPath, new Path(parseResult.outputPath));
