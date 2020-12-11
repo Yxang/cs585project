@@ -18,6 +18,8 @@ You can find the jar file in target. We recommend you to use the jar with depend
 
 ## Usage
 
+We use Hadoop 3 APIs and the program is tested on Hadoop 3.1.3. We do not guareentee the result on Hadoop 2.
+
 ### Start the program
 
 When you start the program, you have to provide it with a xml file of the schemas information. One sample file of the databases used for project 1 is in input/SchemaInfo.xml. You have to make sure the text file for the tables are correctly at the paths in xml file, and the program will only warn you when it detect no files. Once you have that, type something like this to start
