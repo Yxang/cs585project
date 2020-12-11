@@ -65,7 +65,7 @@ GROUP BY Field,...
 
 We support three aggregation function: sum, count and avg.
 
-Different from the convention that `;` marks the end of the statement, we take a whole line as a statement, so please DO NOT type `;` at the end, and type the SQL all In ONE LINE. The command is case insensitive. 
+Different from the convention that `;` marks the end of the statement, we take a whole line as a statement, so please DO NOT type `;` at the end, and type the SQL all IN ONE LINE. The command is case insensitive. 
 
 This command will execute the progressive aggregation jobs with threshold t, and sample rate r. The result will be output to both the console and saved to `/path/to/output/file`.
 
