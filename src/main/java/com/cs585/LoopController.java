@@ -38,7 +38,7 @@ public class LoopController {
             }
             iter ++;
         }
-        if (iter == maxIter){
+        if (iter + 1 == maxIter){
             System.out.println("Max iter reached");
         }
         return outputPath;
