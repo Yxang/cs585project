@@ -62,7 +62,10 @@ GROUP BY Field,...
 [ SAMPLE RATE r]
 [ PATH /path/to/output/file]
 ```
-Different from the convention that `;` marks the end of the statement, we take a whole line as a statement, so please do not type `;` at the end, and type the SQL all in one line. The command is case insensitive. 
+
+We support three aggregation function: sum, count and avg.
+
+Different from the convention that `;` marks the end of the statement, we take a whole line as a statement, so please DO NOT type `;` at the end, and type the SQL all In ONE LINE. The command is case insensitive. 
 
 This command will execute the progressive aggregation jobs with threshold t, and sample rate r. The result will be output to both the console and saved to `/path/to/output/file`.
 
