@@ -48,7 +48,7 @@ CS585>
 
 Then you can input commands.
 
-### Excecute SQL
+### Execute SQL
 
 The format of the SQL command should be
 
